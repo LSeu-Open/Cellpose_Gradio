@@ -1,0 +1,8 @@
+numpy
+matplotlib
+pillow
+gradio
+seaborn
+cellpose
+tifffile
+torch

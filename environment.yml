@@ -1,0 +1,15 @@
+name: cellpose-gradio
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8.18
+  - pip
+  - numpy
+  - matplotlib
+  - pillow
+  - gradio
+  - seaborn
+  - pip:
+    - cellpose
+    - tifffile
