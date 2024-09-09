@@ -1,10 +1,15 @@
 # Cellpose-Gradio
 
-The Cellpose-Gradio App is a modern looking user-friendly interface ported from the popular Cellpose library, making its powerful cell segmentation capabilities accessible to non-experts. By wrapping the complexity of Cellpose within a streamlined Gradio app, users without extensive programming knowledge can easily upload images, select from pre-trained models, and adjust parameters to achieve high-quality cell segmentation results in just a few clicks.
+The **Cellpose-Gradio App** is a modern, user-friendly interface build on the popular **Cellpose library**, making its powerful cell segmentation capabilities accessible to non-experts. By wrapping the complexity of Cellpose within a streamlined **Gradio app**, users without extensive programming knowledge can easily :
 
-Please note that this app is designed for simple, single-image segmentation tasks, using the core features of Cellpose. For more control or model training, we recommend using the official Cellpose GUI, which provides additional functionality and customization options.
+* upload images.
+* select from pre-trained models.
+* adjust parameters to achieve high-quality cell segmentation results in just a few clicks.
 
 > [!NOTE]
+> This app is designed for simple, single-image segmentation tasks, using the core features of Cellpose. For more control or model training, we recommend using the official **Cellpose GUI**, which provides additional functionality and customization options.
+
+> [!IMPORTANT]
 > For **simplicity and ease of use**, this Gradio-based app **omits GPU acceleration**, instead relying on CPU for all cell segmentation tasks.
 >
 > If you plan on **running many images**, you may benefit from installing the **official Cellpose GUI with GPU support**.
