@@ -1,43 +1,56 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: Name of the Conda environment
-set ENV_NAME=cellpose-gradio
+REM Name of the virtual environment
+set ENV_NAME=cellpose-gradio-env
 
-:: Check if Conda is installed
-where conda >nul 2>&1
+REM Check if Python is installed
+where python >nul 2>&1
 if %errorlevel% neq 0 (
-    echo Conda is not installed or not in the system PATH.
-    echo Please install Conda and try again.
+    echo Python is not installed or not in the system PATH.
+    echo Please install Python and try again.
+    pause
     exit /b 1
 )
 
-:: Create and activate the Conda environment
-echo Creating Conda environment: %ENV_NAME%
-conda create -n %ENV_NAME% python=3.8.18 -y
+REM Create the virtual environment
+echo Creating virtual environment: %ENV_NAME%
+python -m venv %ENV_NAME%
 if %errorlevel% neq 0 (
-    echo Failed to create Conda environment.
+    echo Failed to create virtual environment.
+    pause
     exit /b 1
 )
 
-:: Activate the environment
-call conda activate %ENV_NAME%
+REM Activate the environment
+echo Activating virtual environment...
+call %ENV_NAME%\Scripts\activate
 if %errorlevel% neq 0 (
-    echo Failed to activate Conda environment.
+    echo Failed to activate virtual environment.
+    pause
     exit /b 1
 )
 
-:: Install required packages
+REM Install required packages
 echo Installing required packages...
-conda install -y numpy matplotlib pillow gradio seaborn
-pip install cellpose tifffile
+pip install numpy matplotlib pillow gradio seaborn cellpose tifffile
+if %errorlevel% neq 0 (
+    echo Failed to install packages.
+    pause
+    exit /b 1
+)
 
-:: Launch the Gradio app
+REM Launch the Gradio app
 echo Launching Cellpose Gradio app...
 python Cellpose_gradio.py
+if %errorlevel% neq 0 (
+    echo Failed to run Cellpose_gradio.py.
+    pause
+    exit /b 1
+)
 
-:: Deactivate the environment
-call conda deactivate
+REM Deactivate the environment
+call deactivate
 
 echo Setup complete and app launched.
 pause
