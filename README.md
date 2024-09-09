@@ -14,22 +14,15 @@ The **Cellpose-Gradio App** is a modern, user-friendly interface build on the po
 >
 > If you plan on **running many images**, you may benefit from installing the **official Cellpose GUI with GPU support**.
 
-## Acknowledgments
+## Requirements
 
-This project uses the following open-source libraries:
+**Before proceeding with the installation process, please ensure that Python is installed on your system.**
 
-* [Cellpose](https://github.com/mouseland/cellpose), licensed under the [BSD 3-Clause License](https://github.com/mouseland/cellpose/blob/master/LICENSE)
-* [Gradio](https://github.com/gradio-app/gradio), licensed under the [Apache License 2.0](https://github.com/gradio-app/gradio/blob/main/LICENSE)
+If Python is not already installed, please download and install it from the [official Python website](https://www.python.org/downloads/) for your operating system.
 
-Please see the [LICENSE](LICENSE) file for full license texts.
+Once Python is installed, you can proceed with the next steps in the installation process.
 
-* This application is based on the **[Cellpose library](https://github.com/mouseland/cellpose)**. If you find it useful in your research, please cite the original paper:
-
-**If you use Cellpose 1, 2 or 3, please cite the Cellpose 1.0 [paper](https://www.nature.com/articles/s41592-020-01018-x.epdf?sharing_token=yrCA1mB-y9TR8-RC8w_CPdRgN0jAjWel9jnR3ZoTv0Ms-A3TbUG5N7s_6d3I7lMImMDE6cyl-17ubiknffX50r-dX1un0XSIQ2PGYWsCV1du16fIaipcHNxste8FMByEL75Ek_S2_UEVkSk7lCFllWEVogGWJwmQkBC9uKq9UEA%3D)**:
-Stringer, C., Wang, T., Michaelos, M., & Pachitariu, M. (2021). Cellpose: a generalist algorithm for cellular segmentation. Nature methods, 18(1), 100-106.
-
-**If you use the new image restoration models or cyto3, please also cite the Cellpose3 [paper](https://www.biorxiv.org/content/10.1101/2024.02.10.579780v1)**:
-Stringer, C. & Pachitariu, M. (2024). Cellpose3: one-click image restoration for improved segmentation. bioRxiv.
+<br>
 
 ## Automated Installation and Running (Recommended)
 
@@ -73,6 +66,8 @@ After the initial setup, you can use the following scripts to run the app:
 * On Linux/macOS: Run `./run_app.sh` in the terminal
 
 These scripts will activate the environment and launch the Cellpose Gradio app without repeating the setup process.
+
+<br>
 
 ## Manual Installation and Running
 
@@ -196,3 +191,22 @@ These scripts will activate the environment and launch the Cellpose Gradio app w
    ```
 
 6. Open your web browser and go to the URL displayed in the terminal (usually `http://127.0.0.1:7860`).
+
+<br>
+
+## Acknowledgments
+
+This project uses the following open-source libraries:
+
+* [Cellpose](https://github.com/mouseland/cellpose), licensed under the [BSD 3-Clause License](https://github.com/mouseland/cellpose/blob/master/LICENSE)
+* [Gradio](https://github.com/gradio-app/gradio), licensed under the [Apache License 2.0](https://github.com/gradio-app/gradio/blob/main/LICENSE)
+
+Please see the [LICENSE](LICENSE) file for full license texts.
+
+* This application is based on the **[Cellpose library](https://github.com/mouseland/cellpose)**. If you find it useful in your research, please cite the original paper:
+
+**If you use Cellpose 1, 2 or 3, please cite the Cellpose 1.0 [paper](https://www.nature.com/articles/s41592-020-01018-x.epdf?sharing_token=yrCA1mB-y9TR8-RC8w_CPdRgN0jAjWel9jnR3ZoTv0Ms-A3TbUG5N7s_6d3I7lMImMDE6cyl-17ubiknffX50r-dX1un0XSIQ2PGYWsCV1du16fIaipcHNxste8FMByEL75Ek_S2_UEVkSk7lCFllWEVogGWJwmQkBC9uKq9UEA%3D)**:
+Stringer, C., Wang, T., Michaelos, M., & Pachitariu, M. (2021). Cellpose: a generalist algorithm for cellular segmentation. Nature methods, 18(1), 100-106.
+
+**If you use the new image restoration models or cyto3, please also cite the Cellpose3 [paper](https://www.biorxiv.org/content/10.1101/2024.02.10.579780v1)**:
+Stringer, C. & Pachitariu, M. (2024). Cellpose3: one-click image restoration for improved segmentation. bioRxiv.
