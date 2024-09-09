@@ -28,35 +28,68 @@ Once Python is installed, you can proceed with the next steps in the installatio
 
 ### For Windows (Initial Setup)
 
-1. Download or clone this repository.
-2. Double-click on the `setup_and_run.bat` file.
-3. Follow the on-screen prompts. The script will:
-   * Check if Python is installed
-   * Create a new environment
-   * Install all necessary dependencies
-   * Launch the Cellpose Gradio app
+#### 1. Download or clone this repository
+
+To Download the Repository :  
+
+* Click on the `<> Code` button at the top of the repository page.
+* Select either "Download ZIP" or "Download tar.gz" from the dropdown menu.
+* Extract the downloaded file to your desired location.
+
+to Clone the Repository : 
+
+* Click on the `<> Code` button at the top of the repository page.
+* Copy the repository URL.
+* Open your terminal or command prompt.
+* Run the following command to clone the repository:
+  
+```
+git clone https://github.com/LSeu-Open/Cellpose_Gradio.git
+```
+
+
+#### 2. Double-click on the `setup_and_run.bat` file to run the setup script.
+#### 3. Follow the on-screen prompts.
+
+The script will perform the following actions:
+
+* **Check for Python Installation**: Verify if Python is installed on your system.
+* **Create a New Environment**: Set up a new virtual environment to isolate dependencies.
+* **Install Dependencies**: Install all necessary packages and libraries required for the project. This process may take some time, depending on your computer's specifications.
+* **Launch the Cellpose Gradio App**: Start the Cellpose application using Gradio
+
+#### 4. Open the app
+
+Open your web browser and navigate to the URL displayed in the terminal (usually http://127.0.0.1:7860). Alternatively, you can simply Ctrl+click on the URL in the terminal.
 
 ### For Linux/macOS (Initial Setup)
 
-1. Download or clone this repository.
-2. Open a terminal in the repository directory.
-3. Make the setup script executable:
+#### 1. Download or clone this repository.
+#### 2. Open a terminal in the repository directory.
+#### 3. Make the setup script executable:
 
    ```bash
    chmod +x setup_and_run.sh
    ```
 
-4. Run the setup script:
+#### 4. Run the setup script:
 
    ```bash
    ./setup_and_run.sh
    ```
 
-5. Follow the on-screen prompts. The script will:
-   * Check if Python is installed
-   * Create a new environment
-   * Install all necessary dependencies
-   * Launch the Cellpose Gradio app
+#### 5. Follow the on-screen prompts. The script will:
+
+The script will perform the following actions:
+
+* **Check for Python Installation**: Verify if Python is installed on your system.
+* **Create a New Environment**: Set up a new virtual environment to isolate dependencies.
+* **Install Dependencies**: Install all necessary packages and libraries required for the project. This process may take some time, depending on your computer's specifications.
+* **Launch the Cellpose Gradio App**: Start the Cellpose application using Gradio
+
+#### 6. Open the app
+
+Open your web browser and navigate to the URL displayed in the terminal (usually http://127.0.0.1:7860). Alternatively, you can simply Ctrl+click on the URL in the terminal.
 
 ### Running the App After Initial Setup
 
@@ -65,7 +98,7 @@ After the initial setup, you can use the following scripts to run the app:
 * On Windows: Double-click `run_app.bat`
 * On Linux/macOS: Run `./run_app.sh` in the terminal
 
-These scripts will activate the environment and launch the Cellpose Gradio app without repeating the setup process.
+These scripts will activate the environment and **launch the Cellpose Gradio app without repeating the setup process.**
 
 <br>
 
