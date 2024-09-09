@@ -12,7 +12,7 @@ The **Cellpose-Gradio App** is a modern, user-friendly interface build on the po
 > [!IMPORTANT]
 > For **simplicity and ease of use**, this Gradio-based app **omits GPU acceleration**, instead relying on CPU for all cell segmentation tasks.
 >
-> If you plan on **running many images**, you may benefit from installing the **official Cellpose GUI with GPU support**.
+> If you plan to **run multiple images or process very large images**, you may benefit from installing the **official Cellpose GUI with GPU support**.
 
 ## Requirements
 
