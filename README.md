@@ -122,7 +122,7 @@ These scripts will activate the Conda environment and launch the Cellpose Gradio
 2. Create a virtual environment:
 
    ```bash
-   python -m venv cellpose-env
+   python -m venv cellpose-gradio-env
    ```
 
 3. Activate the virtual environment:
@@ -130,13 +130,13 @@ These scripts will activate the Conda environment and launch the Cellpose Gradio
    * On Windows:
 
    ```bash
-     cellpose-env\Scripts\activate
+     cellpose-gradio-env\Scripts\activate
    ```
 
    * On macOS and Linux:
 
    ```bash
-     source cellpose-env/bin/activate
+     source cellpose-gradio-env/bin/activate
      ```
 
 4. Install the required packages:
