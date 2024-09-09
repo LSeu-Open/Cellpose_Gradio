@@ -1,5 +1,7 @@
 # Cellpose-Gradio
 
+I created this app in response to non-experts' struggles with Cellpose's complex installation process, aiming to provide a more accessible solution.
+
 The **Cellpose-Gradio App** is a modern, user-friendly interface build on the popular **Cellpose library**, making its powerful cell segmentation capabilities accessible to non-experts. By wrapping the complexity of Cellpose within a streamlined **Gradio app**, users without extensive programming knowledge can easily :
 
 * upload images.
