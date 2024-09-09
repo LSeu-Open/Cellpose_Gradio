@@ -38,8 +38,6 @@ To Download the Repository :
 
 to Clone the Repository : 
 
-* Click on the `<> Code` button at the top of the repository page.
-* Copy the repository URL.
 * Open your terminal or command prompt.
 * Run the following command to clone the repository:
   
