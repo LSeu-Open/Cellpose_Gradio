@@ -33,17 +33,17 @@ Stringer, C. & Pachitariu, M. (2024). Cellpose3: one-click image restoration for
 
 ## Automated Installation and Running (Recommended)
 
-### For Windows
+### For Windows (Initial Setup)
 
 1. Download or clone this repository.
 2. Double-click on the `setup_and_run.bat` file.
 3. Follow the on-screen prompts. The script will:
-   * Check if Conda is installed
-   * Create a new Conda environment
+   * Check if Python is installed
+   * Create a new environment
    * Install all necessary dependencies
    * Launch the Cellpose Gradio app
 
-### For Linux/macOS
+### For Linux/macOS (Initial Setup)
 
 1. Download or clone this repository.
 2. Open a terminal in the repository directory.
@@ -60,8 +60,8 @@ Stringer, C. & Pachitariu, M. (2024). Cellpose3: one-click image restoration for
    ```
 
 5. Follow the on-screen prompts. The script will:
-   * Check if Conda is installed
-   * Create a new Conda environment
+   * Check if Python is installed
+   * Create a new environment
    * Install all necessary dependencies
    * Launch the Cellpose Gradio app
 
@@ -72,43 +72,9 @@ After the initial setup, you can use the following scripts to run the app:
 * On Windows: Double-click `run_app.bat`
 * On Linux/macOS: Run `./run_app.sh` in the terminal
 
-These scripts will activate the Conda environment and launch the Cellpose Gradio app without repeating the setup process.
+These scripts will activate the environment and launch the Cellpose Gradio app without repeating the setup process.
 
 ## Manual Installation and Running
-
-### Using Conda
-
-> [!NOTE]
-> we will assume that you have already installed Conda. If not, please install Conda from [here](https://docs.anaconda.com/free/miniconda/miniconda-install/).
-
-1. Open Anaconda Prompt (on Windows) or Terminal (on macOS/Linux).
-
-2. Clone this repository:
-
-   ```bash
-   git clone https://github.com/LSeu-Open/Cellpose_Gradio.git
-   cd Cellpose-Gradio
-   ```
-
-3. Create a conda environment from the `environment.yml` file:
-
-   ```bash
-   conda env create -f environment.yml
-   ```
-
-4. Activate the environment:
-
-   ```bash
-   conda activate cellpose-gradio
-   ```
-
-5. Run the app:
-
-   ```bash
-   python Cellpose_gradio.py
-   ```
-
-6. Open your web browser and go to the URL displayed in the Anaconda Prompt/Terminal (usually `http://127.0.0.1:7860`).
 
 ### Using venv
 
@@ -152,6 +118,40 @@ These scripts will activate the Conda environment and launch the Cellpose Gradio
    ```
 
 6. Open your web browser and go to the URL displayed in the terminal (usually `http://127.0.0.1:7860`).
+
+### Using Conda
+
+> [!NOTE]
+> we will assume that you have already installed Conda. If not, please install Conda from [here](https://docs.anaconda.com/free/miniconda/miniconda-install/).
+
+1. Open Anaconda Prompt (on Windows) or Terminal (on macOS/Linux).
+
+2. Clone this repository:
+
+   ```bash
+   git clone https://github.com/LSeu-Open/Cellpose_Gradio.git
+   cd Cellpose-Gradio
+   ```
+
+3. Create a conda environment from the `environment.yml` file:
+
+   ```bash
+   conda env create -f environment.yml
+   ```
+
+4. Activate the environment:
+
+   ```bash
+   conda activate cellpose-gradio
+   ```
+
+5. Run the app:
+
+   ```bash
+   python Cellpose_gradio.py
+   ```
+
+6. Open your web browser and go to the URL displayed in the Anaconda Prompt/Terminal (usually `http://127.0.0.1:7860`).
 
 ### Using uv
 
