@@ -8,6 +8,8 @@ The **Cellpose-Gradio App** is a modern, user-friendly interface build on the po
 * select from pre-trained models.
 * adjust parameters to achieve high-quality cell segmentation results in just a few clicks.
 
+![Screenshot](https://github.com/LSeu-Open/Cellpose_Gradio/blob/main/Cellpose_Gradio_screenshot.png)
+
 > [!NOTE]
 > This app is designed for simple, single-image segmentation tasks, using the core features of Cellpose. For more control or model training, we recommend using the official **Cellpose GUI**, which provides additional functionality and customization options.
 
@@ -15,6 +17,21 @@ The **Cellpose-Gradio App** is a modern, user-friendly interface build on the po
 > For **simplicity and ease of use**, this Gradio-based app **omits GPU acceleration**, instead relying on CPU for all cell segmentation tasks.
 >
 > If you plan to **run multiple images or process very large images**, you may benefit from installing the **official Cellpose GUI with GPU support**.
+
+## Table of Contents
+
+
+* [Requirements](#requirements)
+* [Automated Installation and Running (Recommended)](#automated-installation-and-running-recommended)
+    - [Windows (Initial Setup)](#windows-initial-setup)
+    - [Linux and macOS (Initial Setup)](#linux-and-macos-initial-setup)
+    - [Run the App After the Initial Setup](#run-the-app-after-the-initial-setup)    
+* [Manual Installation and Running](#manual-installation-and-running)
+    - [Using venv](#using-venv)
+    - [Using Conda](#using-conda)
+    - [Using uv](#using-uv)  
+* [Acknowledgments](#acknowledgments)
+
 
 ## Requirements
 
@@ -28,7 +45,12 @@ Once Python is installed, you can proceed with the next steps in the installatio
 
 ## Automated Installation and Running (Recommended)
 
-### For Windows (Initial Setup)
+### Windows (Initial Setup)
+
+> [!NOTE]
+> First-time users, please follow these steps.
+>
+> After setting it up the first time, simply run `run_app.bat` script to launch the app.
 
 #### 1. Download or clone this repository
 
@@ -62,7 +84,12 @@ The script will perform the following actions:
 
 Open your web browser and navigate to the URL displayed in the terminal (usually http://127.0.0.1:7860). Alternatively, you can simply Ctrl+click on the URL in the terminal.
 
-### For Linux/macOS (Initial Setup)
+### Linux and macOS (Initial Setup)
+
+> [!NOTE]
+> First-time users, please follow these steps.
+>
+> After setting it up the first time, simply run `run_app.sh` script to launch the app.
 
 #### 1. Download or clone this repository.
 #### 2. Open a terminal in the repository directory.
@@ -91,7 +118,7 @@ The script will perform the following actions:
 
 Open your web browser and navigate to the URL displayed in the terminal (usually http://127.0.0.1:7860). Alternatively, you can simply Ctrl+click on the URL in the terminal.
 
-### Running the App After Initial Setup
+### Run the App After the Initial Setup
 
 After the initial setup, you can use the following scripts to run the app:
 
