@@ -162,7 +162,7 @@ with gr.Blocks(css=custom_css) as iface:
     with gr.Row():
         model_type = gr.Dropdown(choices=['cyto3', 'cyto2', 'nuclei'], label="Choose segmentation model", value='cyto3', scale=1, info="cyto models are trained on two-channel images")
         diameter = gr.Slider(minimum=1, maximum=100, step=1, label="Diameter", value=30, scale=1, info="When the input diameters are undersized, CellPose may split cells unnecessarily; when oversized, it may merge overlapping objects.")
-        flow_threshold = gr.Slider(minimum=0.0, maximum=1.0, step=0.05, label="Flow Threshold", value=0.4, scale=1, info="Increase it if CellPose returns fewer ROIs than expected or if they are well-defined shapes; decrease it if it returns more poorly defined ROIs.")
+        flow_threshold = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label="Flow Threshold", value=0.4, scale=1, info="Increase it if CellPose returns fewer ROIs than expected or if they are well-defined shapes; decrease it if it returns more poorly defined ROIs.")
     
     with gr.Row():
         display_channel = gr.Dropdown(choices=["RGB", "Grayscale", "Inverted"], label="Display Channel", value="RGB", scale=1)
