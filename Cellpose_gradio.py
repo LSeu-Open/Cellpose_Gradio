@@ -42,18 +42,17 @@ def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str) 
     if display_channel == "RGB":
         ax1.imshow(image)
     elif display_channel == "Grayscale":
-        ax1.imshow(image, cmap='gray')
-    elif display_channel == "Inverted":
-        ax1.imshow(np.invert(image), cmap='gray')
-    elif isinstance(display_channel, int) and image.ndim == 3:
-        ax1.imshow(image[:,:,display_channel])
+        ax1.imshow(np.mean(image, axis=2), cmap='gray')
+    elif display_channel in ["Red", "Green", "Blue"]:
+        channel_index = {"Red": 0, "Green": 1, "Blue": 2}[display_channel]
+        ax1.imshow(image[:,:,channel_index], cmap='gray')
     else:
         ax1.imshow(image)
     ax1.set_title('Original Image')
     ax1.axis('off')
     
     # Display segmentation masks
-    ax2.imshow(masks, cmap='tab20b')
+    ax2.imshow(masks, cmap='viridis')
     ax2.set_title('Segmentation Masks')
     ax2.axis('off')
     
@@ -78,9 +77,10 @@ def save_masks(image, masks):
 
         # Save masks as PNG
         png_filename = os.path.join(output_folder, f"{base_filename}_masks.png")
-        plt.imshow(masks, cmap='tab20b')
+        plt.figure(figsize=(10, 10))
+        plt.imshow(masks, cmap='viridis')
         plt.axis('off')
-        plt.savefig(png_filename, bbox_inches='tight', pad_inches=0)
+        plt.savefig(png_filename, bbox_inches='tight', pad_inches=0, dpi=300)
         plt.close()
         png_path = os.path.abspath(png_filename)
 
@@ -138,26 +138,29 @@ def update_channel_visibility(channel_config):
     else:
         return gr.update(visible=False), gr.update(visible=False)
 
-# Custom CSS to increase font size and overall UI size
+# Custom CSS
 custom_css = """
-body, .gradio-container {
-    font-size: 18px;
-}
 .gradio-container {
     max-width: 1200px !important;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
 }
 .output-image, .input-image {
     height: 600px !important;
 }
+.center {
+    text-align: center;
+}
 """
 
-with gr.Blocks(css=custom_css) as iface:
-    gr.Markdown("# Cellpose Segmentation", elem_classes=["center"])
-    gr.Markdown("Upload an image to segment using Cellpose. Choose the model type, channel configuration, and specify the parameters. The output will be a PNG image of the segmentation masks, a NPY file of the masks, and a PNG image of the outlines.")
-    gr.Markdown("This app is designed to simplify the process of segmenting single images using the Cellpose models. For more complex needs, please use the Cellpose GUI.")
+custom_theme = gr.themes.Soft(primary_hue="orange", secondary_hue="orange", font=["Arial", "sans-serif"])
+
+with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
+    gr.Markdown("# Cellpose Gradio", elem_classes=["center"])
+    gr.Markdown("A Gradio based user-friendly interface for cell segmentation using Cellpose. For more complex needs, please use the Cellpose GUI.", elem_classes=["center"])
     
     with gr.Row():
-        input_image = gr.Image(label="Input Image", type="numpy", height=150, width=150)
+        input_image = gr.Image(label="Input Image - Supported formats include TIFF, PNG, and JPEG.", type="numpy", height=400, width=400)
         
     with gr.Row():
         model_type = gr.Dropdown(choices=['cyto3', 'cyto2', 'nuclei'], label="Choose segmentation model", value='cyto3', scale=1, info="cyto models are trained on two-channel images")
@@ -165,17 +168,22 @@ with gr.Blocks(css=custom_css) as iface:
         flow_threshold = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label="Flow Threshold", value=0.4, scale=1, info="Increase it if CellPose returns fewer ROIs than expected or if they are well-defined shapes; decrease it if it returns more poorly defined ROIs.")
     
     with gr.Row():
-        display_channel = gr.Dropdown(choices=["RGB", "Grayscale", "Inverted"], label="Display Channel", value="RGB", scale=1)
+        display_channel = gr.Dropdown(
+            choices=["RGB", "Grayscale", "Red", "Green", "Blue"],
+            label="Display Channel",
+            value="RGB",
+            scale=1
+        )
         seg_channel1 = gr.Dropdown(choices=[0, 1, 2, 3], label="Segmentation Channel 1", value=0, visible=True, info="0=grayscale, 1=red, 2=green, 3=blue", scale=1)
         seg_channel2 = gr.Dropdown(choices=[0, 1, 2, 3], label="Segmentation Channel 2", value=0, visible=True, info="0=None (will set to zero), 1=red, 2=green, 3=blue", scale=1)
     
+    process_btn = gr.Button("Run Segmentation", scale=2)
+
     output_plot = gr.Plot(label="Segmentation Results")
     
     with gr.Row():
         cell_count_output = gr.Number(label="Cell Count", scale=1)
         output_files = gr.File(label="Download Results (date is in the filename formatted as YYYY-MM-DD_HH-MM)", file_count="multiple", scale=1)
-    
-    process_btn = gr.Button("Process", scale=2)
     
     process_btn.click(
         fn=process_and_display,
@@ -183,9 +191,9 @@ with gr.Blocks(css=custom_css) as iface:
         outputs=[output_plot, output_files, cell_count_output]
     )
 
-    gr.Markdown("This app is based on Cellpose, a software for cell segmentation in microscopy images. For more information, see the [Cellpose Github repository](https://github.com/Cellpose/Cellpose).")
-    gr.Markdown("If you find this app useful, please cite the [Cellpose3 paper](https://www.biorxiv.org/content/10.1101/2024.02.10.579780v1).")
-    gr.Markdown("If you have any issues or feedback, please open an issue on the [Github Cellpose-gradio repository](https://github.com/LSeu-Open/cellpose-gradio).")
+    gr.Markdown("This app is based on Cellpose, a software for cell segmentation in microscopy images. For more information, see the [Cellpose Github repository](https://github.com/Cellpose/Cellpose).", elem_classes=["center"])
+    gr.Markdown("If you find this app useful, please cite the [Cellpose3 paper](https://www.biorxiv.org/content/10.1101/2024.02.10.579780v1).", elem_classes=["center"])
+    gr.Markdown("If you have any issues or feedback, please open an issue on the [Github Cellpose-gradio repository](https://github.com/LSeu-Open/cellpose-gradio).", elem_classes=["center"])
 
 # Launch the interface
 if __name__ == "__main__":
