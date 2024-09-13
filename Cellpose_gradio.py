@@ -6,24 +6,66 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from datetime import datetime
 
-# Your existing functions
-def load_image(file_path: str) -> np.ndarray:
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Image file not found: {file_path}")
-    
+def load_image(file_path: str) -> tuple[np.ndarray | None, str | None]:
+    """
+    Load an image file and return it as a numpy array.
+
+    This function attempts to load an image from the specified file path,
+    checking for file existence and supported file formats. It returns
+    the image as a numpy array if successful, or None with an error message
+    if unsuccessful.
+
+    Args:
+        file_path (str): The path to the image file to be loaded.
+
+    Returns:
+        tuple[np.ndarray | None, str | None]: A tuple containing:
+            - The loaded image as a numpy array, or None if loading failed.
+            - An error message string if an exception occurred, or None if successful.
+    """
     valid_extensions = ['.tif', '.tiff', '.png', '.jpg', '.jpeg']
-    if os.path.splitext(file_path)[1].lower() not in valid_extensions:
-        raise ValueError("Unsupported file format. Please use TIFF, PNG, or JPEG images.")
     
     try:
+        if not os.path.exists(file_path):
+            gr.Warning(f"Image file not found: {file_path}")
+            return None, f"Image file not found: {file_path}"
+        
+        if os.path.splitext(file_path)[1].lower() not in valid_extensions:
+            gr.Warning("Unsupported file format. Please use TIFF, PNG, or JPEG images.")
+            return None, "Unsupported file format. Please use TIFF, PNG, or JPEG images."
+        
         image = plt.imread(file_path)
         if image is None:
-            raise IOError("Failed to load image")
-        return image
+            gr.Warning("Failed to load image")
+            return None, "Failed to load image"
+        
+        return image, None
     except Exception as e:
-        raise IOError(f"Error loading image: {str(e)}")
+        gr.Warning(str(e))
+        return None, str(e)
 
 def segment_image(image: np.ndarray, model_type: str, channels: list, diameter: float = None, flow_threshold: float = None) -> np.ndarray:
+    """
+    Segment cells in an image using the Cellpose model.
+
+    This function applies the Cellpose segmentation algorithm to the input image
+    using the specified model type and parameters. It returns a mask array where
+    each cell is uniquely labeled.
+
+    Args:
+        image (np.ndarray): The input image to be segmented.
+        model_type (str): The type of Cellpose model to use (e.g., 'cyto', 'nuclei').
+        channels (list): List specifying the channels to use for segmentation.
+        diameter (float, optional): The expected diameter of cells in pixels. Defaults to None.
+        flow_threshold (float, optional): The flow threshold for cell detection. Defaults to None.
+
+    Returns:
+        np.ndarray: A 2D array of the same size as the input image, where each cell
+                    is labeled with a unique integer. Background is labeled as 0.
+
+    Raises:
+        RuntimeError: If segmentation fails due to invalid input or parameters.
+    """
     model = models.Cellpose(model_type=model_type)
     
     try:
@@ -33,9 +75,48 @@ def segment_image(image: np.ndarray, model_type: str, channels: list, diameter: 
         raise RuntimeError(f"Segmentation failed: {str(e)}. Check your input image and parameters.")
 
 def count_cells(masks: np.ndarray) -> int:
-    return len(np.unique(masks)) - 1  # Subtract 1 to exclude the background (usually labeled as 0)
+    """
+    Count the number of unique cells in a segmentation mask.
 
-def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str) -> plt.Figure:
+    This function takes a 2D numpy array of segmentation masks where each cell
+    is labeled with a unique integer, and counts the number of distinct cells.
+    It assumes that the background is labeled as 0.
+
+    Args:
+        masks (np.ndarray): A 2D numpy array containing segmentation masks.
+
+    Returns:
+        int: The number of unique cells in the mask.
+
+    Note:
+        This function subtracts 1 from the count to exclude the background,
+        which is typically labeled as 0 in the mask.
+    """
+    return len(np.unique(masks)) - 1
+
+def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str, cmap: str = 'viridis') -> plt.Figure:
+    """
+    Display the original image and segmentation masks side by side.
+
+    This function creates a figure with two subplots: one for the original image
+    and another for the segmentation masks. The original image can be displayed
+    in different modes (RGB, Grayscale, or individual color channels) based on
+    the display_channel parameter.
+
+    Args:
+        image (np.ndarray): The original input image.
+        masks (np.ndarray): The segmentation masks generated by Cellpose.
+        display_channel (str): The channel to display for the original image.
+            Can be "RGB", "Grayscale", "Red", "Green", or "Blue".
+        cmap (str): The colormap to use for displaying the segmentation masks.
+
+    Returns:
+        plt.Figure: A matplotlib Figure object containing the two subplots.
+
+    Note:
+        The function uses different colormaps for the original image (grayscale
+        for single-channel displays) and the segmentation masks (user-specified).
+    """
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
     
     # Display original image
@@ -52,7 +133,7 @@ def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str) 
     ax1.axis('off')
     
     # Display segmentation masks
-    ax2.imshow(masks, cmap='viridis')
+    ax2.imshow(masks, cmap=cmap)
     ax2.set_title('Segmentation Masks')
     ax2.axis('off')
     
@@ -60,6 +141,26 @@ def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str) 
     return fig
 
 def save_masks(image, masks):
+    """
+    Save the segmentation masks in various formats.
+
+    This function saves the segmentation masks as NPY, PNG, and outline PNG files.
+    It creates a unique filename for each output based on the current timestamp.
+
+    Args:
+        image (np.ndarray): The original input image.
+        masks (np.ndarray): The segmentation masks generated by Cellpose.
+
+    Returns:
+        list: A list of absolute file paths for the saved masks (NPY, PNG, and outline PNG),
+              or None if no masks were provided.
+
+    Note:
+        - The function creates an 'Outputs' folder if it doesn't exist.
+        - The NPY file contains the raw mask data.
+        - The PNG file shows the masks with a viridis colormap.
+        - The outline PNG file shows the outlines of the masks overlaid on the original image.
+    """
     if masks is not None:
         # Create a unique base filename using a formatted timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
@@ -110,27 +211,59 @@ def display_input_image(image):
         return image
     return None
 
-def process_and_display(image, model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2):
-    if image is not None:
-        # Convert grayscale to RGB if necessary
-        if image.ndim == 2:
-            image = np.stack((image,) * 3, axis=-1)
-        elif image.ndim == 3 and image.shape[2] == 4:  # RGBA image
-            image = image[:, :, :3]  # Remove alpha channel
-        
-        # Ensure image is uint8
-        image = (image * 255).astype(np.uint8) if image.dtype == np.float64 else image.astype(np.uint8)
-        
-        # Set channels for segmentation
-        channels = [seg_channel1, seg_channel2]
-        
-        masks = segment_image(image, model_type, channels=channels, diameter=diameter, flow_threshold=flow_threshold)
-        fig = display_results(image, masks, display_channel=display_channel)
-        cell_count = count_cells(masks)
-        mask_files = save_masks(image, masks)
-        
-        return fig, mask_files, cell_count
-    return None, None, None
+def process_and_display(image, model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap):
+    """
+    Process an input image using Cellpose for cell segmentation and display the results.
+
+    This function performs the following steps:
+    1. Checks if an image is provided and converts it to the appropriate format.
+    2. Applies Cellpose segmentation using the specified parameters.
+    3. Generates a figure displaying the segmentation results.
+    4. Counts the number of cells in the segmented image.
+    5. Saves the segmentation masks to files.
+
+    Args:
+        image (numpy.ndarray): Input image for segmentation.
+        model_type (str): Type of Cellpose model to use ('cyto3', 'cyto2', or 'nuclei').
+        diameter (int): Approximate diameter of cells in pixels.
+        flow_threshold (float): Flow threshold for Cellpose segmentation.
+        display_channel (str): Channel to display in the output figure.
+        seg_channel1 (int): First channel to use for segmentation.
+        seg_channel2 (int): Second channel to use for segmentation.
+        cmap (str): Colormap to use for displaying the segmentation masks.
+
+    Returns:
+        tuple: Contains the following elements:
+            - fig (matplotlib.figure.Figure): Figure object with segmentation results.
+            - mask_files (list): Paths to saved mask files.
+            - cell_count (int): Number of cells detected.
+            - gr.update: Gradio update object to hide/show error alerts.
+    """
+    try:
+        if image is not None:
+            # Convert grayscale to RGB if necessary
+            if image.ndim == 2:
+                image = np.stack((image,) * 3, axis=-1)
+            elif image.ndim == 3 and image.shape[2] == 4:  # RGBA image
+                image = image[:, :, :3]  # Remove alpha channel
+            
+            # Ensure image is uint8
+            image = (image * 255).astype(np.uint8) if image.dtype == np.float64 else image.astype(np.uint8)
+            
+            # Set channels for segmentation
+            channels = [seg_channel1, seg_channel2]
+            
+            masks = segment_image(image, model_type, channels=channels, diameter=diameter, flow_threshold=flow_threshold)
+            fig = display_results(image, masks, display_channel=display_channel, cmap=cmap)
+            cell_count = count_cells(masks)
+            mask_files = save_masks(image, masks)
+            
+            return fig, mask_files, cell_count, gr.update(visible=False)  # Hide error alert on success
+        gr.Warning("No image provided.")
+        return None, None, None, gr.update(visible=True)
+    except Exception as e:
+        gr.Error(str(e))  # Show error message
+        return None, None, None, gr.update(visible=True)
 
 def update_channel_visibility(channel_config):
     if channel_config == "own channels":
@@ -158,6 +291,7 @@ custom_theme = gr.themes.Soft(primary_hue="orange", secondary_hue="orange", font
 with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     gr.Markdown("# Cellpose Gradio", elem_classes=["center"])
     gr.Markdown("A Gradio based user-friendly interface for cell segmentation using Cellpose. For more complex needs, please use the Cellpose GUI.", elem_classes=["center"])
+    gr.Markdown("Please refer to the [Cellpose documentation](https://cellpose.readthedocs.io/en/latest/) for more information on the parameters.", elem_classes=["center"])
     
     with gr.Row():
         input_image = gr.Image(label="Input Image - Supported formats include TIFF, PNG, and JPEG.", type="numpy", height=400, width=400)
@@ -168,14 +302,34 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
         flow_threshold = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label="Flow Threshold", value=0.4, scale=1, info="Increase it if CellPose returns fewer ROIs than expected or if they are well-defined shapes; decrease it if it returns more poorly defined ROIs.")
     
     with gr.Row():
-        display_channel = gr.Dropdown(
-            choices=["RGB", "Grayscale", "Red", "Green", "Blue"],
-            label="Display Channel",
-            value="RGB",
-            scale=1
-        )
-        seg_channel1 = gr.Dropdown(choices=[0, 1, 2, 3], label="Segmentation Channel 1", value=0, visible=True, info="0=grayscale, 1=red, 2=green, 3=blue", scale=1)
-        seg_channel2 = gr.Dropdown(choices=[0, 1, 2, 3], label="Segmentation Channel 2", value=0, visible=True, info="0=None (will set to zero), 1=red, 2=green, 3=blue", scale=1)
+        with gr.Column(scale=2):
+            with gr.Group():
+                display_channel = gr.Dropdown(
+                choices=["RGB", "Grayscale", "Red", "Green", "Blue"],
+                label="Displayed Channel",
+                    value="RGB",
+                    info="The channel used to display the original image after segmentation."
+                )
+                cmap = gr.Dropdown(
+                choices=['viridis', 'plasma', 'inferno', 'magma', 'cividis'],
+                label="Segmentation Masks Color Palette",
+                value='viridis',
+                info="The color palette used to display different cells in the segmentation result."
+            )
+        with gr.Column(scale=2):
+            with gr.Group():
+                seg_channel1 = gr.Dropdown(
+                    choices=[0, 1, 2, 3],
+                    label="Segmentation Channel 1",
+                    value=0,
+                    info="0=grayscale, 1=red, 2=green, 3=blue"
+                )
+                seg_channel2 = gr.Dropdown(
+                    choices=[0, 1, 2, 3],
+                    label="Segmentation Channel 2",
+                    value=0,
+                    info="0=None (will set to zero), 1=red, 2=green, 3=blue"
+                )
     
     process_btn = gr.Button("Run Segmentation", scale=2)
 
@@ -187,7 +341,7 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     
     process_btn.click(
         fn=process_and_display,
-        inputs=[input_image, model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2],
+        inputs=[input_image, model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap],
         outputs=[output_plot, output_files, cell_count_output]
     )
 
