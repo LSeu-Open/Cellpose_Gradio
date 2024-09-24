@@ -1,8 +1,8 @@
 # Cellpose-Gradio
 
-I created this app in response to non-experts' struggles with Cellpose's complex installation process, aiming to provide a more accessible solution.
+In response to non-experts' struggles with Cellpose's complex installation process, I created this app to provide a more accessible solution.
 
-The **Cellpose-Gradio App** is a modern, user-friendly interface build on the popular **Cellpose library**, making its powerful cell segmentation capabilities accessible to non-experts. By wrapping the complexity of Cellpose within a streamlined **Gradio app**, users without extensive programming knowledge can easily :
+The ***Cellpose-Gradio App*** is a modern, user-friendly interface built on the popular **Cellpose library**, making its powerful cell segmentation capabilities available to users without extensive technical expertise. By encapsulating the complexity of Cellpose within an intuitive **Gradio app**, users can easily:
 
 * upload images.
 * select from pre-trained models.
@@ -10,8 +10,10 @@ The **Cellpose-Gradio App** is a modern, user-friendly interface build on the po
 
 ![Screenshot](https://github.com/LSeu-Open/Cellpose_Gradio/blob/main/Cellpose_Gradio_screenshot.png)
 
-> [!NOTE]
-> This app is designed for simple, single-image segmentation tasks, using the core features of Cellpose. For more control or model training, we recommend using the official **Cellpose GUI**, which provides additional functionality and customization options.
+> [!CAUTION]
+> This app is designed for straightforward, single-image segmentation tasks, utilizing the core features of Cellpose. Additionally, it can serves as an educational tool to help users understand how to manage segmentation parameters effectively.
+>
+>  For more advanced control over segmentation, including human-in-the-loop training or accessing the image restoration features of the 3.0 version, please use the **official Cellpose GUI**.
 
 > [!IMPORTANT]
 > For **simplicity and ease of use**, this Gradio-based app **omits GPU acceleration**, instead relying on CPU for all cell segmentation tasks.
@@ -82,7 +84,7 @@ The script will perform the following actions:
 
 #### 4. Open the app
 
-Open your web browser and navigate to the URL displayed in the terminal (usually http://127.0.0.1:7860). Alternatively, you can simply Ctrl+click on the URL in the terminal.
+Open your web browser and navigate to the URL displayed in the terminal (typically http://127.0.0.1:7860). Alternatively, you can simply click the URL in the terminal while holding down the Ctrl key.
 
 ### Linux and macOS (Initial Setup)
 
@@ -116,7 +118,7 @@ The script will perform the following actions:
 
 #### 6. Open the app
 
-Open your web browser and navigate to the URL displayed in the terminal (usually http://127.0.0.1:7860). Alternatively, you can simply Ctrl+click on the URL in the terminal.
+Open your web browser and navigate to the URL displayed in the terminal (typically http://127.0.0.1:7860). Alternatively, you can simply click the URL in the terminal while holding down the Ctrl key.
 
 ### Run the App After the Initial Setup
 
@@ -261,7 +263,7 @@ This project uses the following open-source libraries:
 * [Cellpose](https://github.com/mouseland/cellpose), licensed under the [BSD 3-Clause License](https://github.com/mouseland/cellpose/blob/master/LICENSE)
 * [Gradio](https://github.com/gradio-app/gradio), licensed under the [Apache License 2.0](https://github.com/gradio-app/gradio/blob/main/LICENSE)
 
-Please see the [LICENSE](LICENSE) file for full license texts.
+Please see the [ACKNOWLEDGMENTS](https://github.com/LSeu-Open/Cellpose_Gradio/blob/main/ACKNOWLEDGMENTS) and [Licence](https://github.com/LSeu-Open/Cellpose_Gradio/blob/main/LICENSE) files for full license texts.
 
 * This application is based on the **[Cellpose library](https://github.com/mouseland/cellpose)**. If you find it useful in your research, please cite the original paper:
 
