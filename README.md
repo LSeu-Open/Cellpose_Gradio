@@ -10,6 +10,9 @@ The ***Cellpose-Gradio App*** is a modern, user-friendly interface built on the 
 
 ![Screenshot](https://github.com/LSeu-Open/Cellpose_Gradio/blob/main/Cellpose_Gradio_screenshot.png)
 
+> [!NOTE]
+> When you upload your image, you will see a preview if it is in .png or .jpeg format. Please note that the current version of Gradio **does not support previews for TIF images**.
+
 > [!CAUTION]
 > This app is designed for straightforward, single-image segmentation tasks, utilizing the core features of Cellpose. Additionally, it can serves as an educational tool to help users understand how to manage segmentation parameters effectively.
 >
