@@ -94,12 +94,12 @@ def count_cells(masks: np.ndarray) -> int:
     """
     return len(np.unique(masks)) - 1
 
-def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str, cmap: str = 'viridis') -> plt.Figure:
+def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str, cmap: str = 'tab20b') -> plt.Figure:
     """
     Display the original image and segmentation masks side by side.
 
-    This function creates a figure with two subplots: one for the original image
-    and another for the segmentation masks. The original image can be displayed
+    This function creates a figure with three subplots: one for the original image,
+    one for the segmentation masks and one for the outlines. The original image can be displayed
     in different modes (RGB, Grayscale, or individual color channels) based on
     the display_channel parameter.
 
@@ -111,13 +111,13 @@ def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str, 
         cmap (str): The colormap to use for displaying the segmentation masks.
 
     Returns:
-        plt.Figure: A matplotlib Figure object containing the two subplots.
+        plt.Figure: A matplotlib Figure object containing the three subplots.
 
     Note:
         The function uses different colormaps for the original image (grayscale
         for single-channel displays) and the segmentation masks (user-specified).
     """
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(12, 6))
     
     # Display original image
     if display_channel == "RGB":
@@ -136,7 +136,15 @@ def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str, 
     ax2.imshow(masks, cmap=cmap)
     ax2.set_title('Segmentation Masks')
     ax2.axis('off')
+    ax2.set_facecolor('black')
     
+    # display outlines
+    outlines = utils.masks_to_outlines(masks)
+    ax3.imshow(outlines, cmap='gray')
+    ax3.set_title('Outlines')
+    ax3.axis('off')
+    ax3.set_facecolor('black')
+
     plt.tight_layout()
     return fig
 
@@ -179,7 +187,7 @@ def save_masks(image, masks):
         # Save masks as PNG
         png_filename = os.path.join(output_folder, f"{base_filename}_masks.png")
         plt.figure(figsize=(10, 10))
-        plt.imshow(masks, cmap='viridis')
+        plt.imshow(masks, cmap='tab20b')
         plt.axis('off')
         plt.savefig(png_filename, bbox_inches='tight', pad_inches=0, dpi=300)
         plt.close()
@@ -294,12 +302,12 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     gr.Markdown("Please refer to the [Cellpose documentation](https://cellpose.readthedocs.io/en/latest/) for more information on the parameters.", elem_classes=["center"])
     
     with gr.Row():
-        input_image = gr.Image(label="Input Image - Supported formats include TIFF, PNG, and JPEG.", type="numpy", height=400, width=400)
+        input_image = gr.Image(label="Input Image - Supported formats include TIFF, PNG, and JPEG.", type="numpy", height=400, width=400, visible=True)
         
     with gr.Row():
-        model_type = gr.Dropdown(choices=['cyto3', 'cyto2', 'nuclei'], label="Choose segmentation model", value='cyto3', scale=1, info="cyto models are trained on two-channel images")
-        diameter = gr.Slider(minimum=1, maximum=100, step=1, label="Diameter", value=30, scale=1, info="When the input diameters are undersized, CellPose may split cells unnecessarily; when oversized, it may merge overlapping objects.")
-        flow_threshold = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label="Flow Threshold", value=0.4, scale=1, info="Increase it if CellPose returns fewer ROIs than expected or if they are well-defined shapes; decrease it if it returns more poorly defined ROIs.")
+        model_type = gr.Dropdown(choices=['cyto3', 'cyto2', 'cyto', 'nuclei'], label="Choose segmentation model", value='cyto3', scale=1, info="cyto/cyto2/cyto3: generalist models for cells (channel 1 is cells color and channel 2 is nuclei color), nuclei: specialized for nucleus segmentation.(channel 1 is nuclei color and set channel 2 to 0)")
+        diameter = gr.Slider(minimum=1, maximum=100, step=1, label="Diameter", value=30, scale=1, info="Set the expected diameter of cells in pixels. When the diameter is set smaller than the true size then cellpose may over-split cells. Similarly, if the diameter is set too big then cellpose may over-merge cells.")
+        flow_threshold = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label="Flow Threshold", value=0.4, scale=1, info="Adjust the flow threshold (maximum allowed error of the flows for each mask): Increase it if cellpose is not returning as many ROIs as you’d expect. Decrease it if cellpose is returning too many ill-shaped ROIs.")
     
     with gr.Row():
         with gr.Column(scale=2):
@@ -311,9 +319,9 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
                     info="The channel used to display the original image after segmentation."
                 )
                 cmap = gr.Dropdown(
-                choices=['viridis', 'plasma', 'inferno', 'magma', 'cividis'],
+                choices=['tab20', 'tab20b', 'tab20c','viridis', 'plasma', 'inferno', 'magma', 'cividis', 'hsv', 'twilight', 'gray'],
                 label="Segmentation Masks Color Palette",
-                value='viridis',
+                value='tab20b',
                 info="The color palette used to display different cells in the segmentation result."
             )
         with gr.Column(scale=2):
@@ -336,8 +344,8 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     output_plot = gr.Plot(label="Segmentation Results")
     
     with gr.Row():
-        cell_count_output = gr.Number(label="Cell Count", scale=1)
-        output_files = gr.File(label="Download Results (date is in the filename formatted as YYYY-MM-DD_HH-MM)", file_count="multiple", scale=1)
+        cell_count_output = gr.Number(label="Number of cells detected", scale=1)
+        output_files = gr.File(label="Download Results (date and time is in the filename)", file_count="multiple", scale=1)
     
     process_btn.click(
         fn=process_and_display,
