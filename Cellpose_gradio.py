@@ -27,21 +27,21 @@ def load_image(file_path: str) -> tuple[np.ndarray | None, str | None]:
     
     try:
         if not os.path.exists(file_path):
-            gr.Warning(f"Image file not found: {file_path}")
+            gr.Error(f"Image file not found: {file_path}")
             return None, f"Image file not found: {file_path}"
         
         if os.path.splitext(file_path)[1].lower() not in valid_extensions:
-            gr.Warning("Unsupported file format. Please use TIFF, PNG, or JPEG images.")
+            gr.Error("Unsupported file format. Please use TIFF, PNG, or JPEG images.")
             return None, "Unsupported file format. Please use TIFF, PNG, or JPEG images."
         
         image = plt.imread(file_path)
         if image is None:
-            gr.Warning("Failed to load image")
+            gr.Error("Failed to load image")
             return None, "Failed to load image"
         
         return image, None
     except Exception as e:
-        gr.Warning(str(e))
+        gr.Error(str(e))
         return None, str(e)
 
 def segment_image(image: np.ndarray, model_type: str, channels: list, diameter: float = None, flow_threshold: float = None) -> np.ndarray:
@@ -172,7 +172,7 @@ def save_masks(image, masks):
     if masks is not None:
         # Create a unique base filename using a formatted timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-        base_filename = f"cellpose_output_{timestamp}"
+        base_filename = f"cellpose_{timestamp}"
         
         # Save masks as NPY
         # Create Outputs folder if it doesn't exist
@@ -180,12 +180,12 @@ def save_masks(image, masks):
         os.makedirs(output_folder, exist_ok=True)
 
         # Save masks as NPY
-        npy_filename = os.path.join(output_folder, f"{base_filename}_masks.npy")
+        npy_filename = os.path.join(output_folder, f"masks_{base_filename}.npy")
         np.save(npy_filename, masks)
         npy_path = os.path.abspath(npy_filename)
 
         # Save masks as PNG
-        png_filename = os.path.join(output_folder, f"{base_filename}_masks.png")
+        png_filename = os.path.join(output_folder, f"masks_{base_filename}.png")
         plt.figure(figsize=(10, 10))
         plt.imshow(masks, cmap='tab20b')
         plt.axis('off')
@@ -194,7 +194,7 @@ def save_masks(image, masks):
         png_path = os.path.abspath(png_filename)
 
         # Save outlines as PNG
-        outlines_filename = os.path.join(output_folder, f"{base_filename}_outlines.png")
+        outlines_filename = os.path.join(output_folder, f"outlines_{base_filename}.png")
         overlay = image.copy()
         overlay = utils.masks_to_outlines(masks)
         Image.fromarray(overlay).save(outlines_filename)
@@ -219,7 +219,7 @@ def display_input_image(image):
         return image
     return None
 
-def process_and_display(image, model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap):
+def process_and_display(image, model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap, progress=gr.Progress()):
     """
     Process an input image using Cellpose for cell segmentation and display the results.
 
@@ -239,6 +239,7 @@ def process_and_display(image, model_type, diameter, flow_threshold, display_cha
         seg_channel1 (int): First channel to use for segmentation.
         seg_channel2 (int): Second channel to use for segmentation.
         cmap (str): Colormap to use for displaying the segmentation masks.
+        progress (gr.Progress): Gradio progress indicator.
 
     Returns:
         tuple: Contains the following elements:
@@ -261,14 +262,19 @@ def process_and_display(image, model_type, diameter, flow_threshold, display_cha
             # Set channels for segmentation
             channels = [seg_channel1, seg_channel2]
             
+            progress(0.1, desc="Segmentation in progress...")
             masks = segment_image(image, model_type, channels=channels, diameter=diameter, flow_threshold=flow_threshold)
+            progress(0.5, desc="Segmentation complete. Generating results...")
+            
             fig = display_results(image, masks, display_channel=display_channel, cmap=cmap)
             cell_count = count_cells(masks)
             mask_files = save_masks(image, masks)
             
-            return fig, mask_files, cell_count, gr.update(visible=False)  # Hide error alert on success
-        gr.Warning("No image provided.")
+            progress(1.0, desc="Process complete!")
+            return fig, mask_files, cell_count, gr.update(visible=False)
+        gr.Error("No image provided.")
         return None, None, None, gr.update(visible=True)
+    
     except Exception as e:
         gr.Error(str(e))  # Show error message
         return None, None, None, gr.update(visible=True)
@@ -302,7 +308,7 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     gr.Markdown("Please refer to the [Cellpose documentation](https://cellpose.readthedocs.io/en/latest/) for more information on the parameters.", elem_classes=["center"])
     
     with gr.Row():
-        input_image = gr.Image(label="Input Image - Supported formats include TIFF, PNG, and JPEG.", type="numpy", height=400, width=400, visible=True)
+        input_image = gr.Image(label="Input Image - Supported formats include TIFF, PNG, and JPEG. - TIFF images preview is not supported.", type="numpy", height=400, width=400, visible=True)
         
     with gr.Row():
         model_type = gr.Dropdown(choices=['cyto3', 'cyto2', 'cyto', 'nuclei'], label="Choose segmentation model", value='cyto3', scale=1, info="cyto/cyto2/cyto3: generalist models for cells (channel 1 is cells color and channel 2 is nuclei color), nuclei: specialized for nucleus segmentation.(channel 1 is nuclei color and set channel 2 to 0)")
@@ -341,7 +347,9 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     
     process_btn = gr.Button("Run Segmentation", scale=2)
 
-    output_plot = gr.Plot(label="Segmentation Results")
+    with gr.Row():
+        output_plot = gr.Plot(label="Segmentation Results")
+        progress_output = gr.Textbox(label="Progress", interactive=False, visible=False)
     
     with gr.Row():
         cell_count_output = gr.Number(label="Number of cells detected", scale=1)
@@ -350,7 +358,7 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     process_btn.click(
         fn=process_and_display,
         inputs=[input_image, model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap],
-        outputs=[output_plot, output_files, cell_count_output]
+        outputs=[output_plot, output_files, cell_count_output, progress_output]
     )
 
     gr.Markdown("This app is based on Cellpose, a software for cell segmentation in microscopy images. For more information, see the [Cellpose Github repository](https://github.com/Cellpose/Cellpose).", elem_classes=["center"])
