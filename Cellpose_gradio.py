@@ -5,6 +5,7 @@ from cellpose import models, utils
 import matplotlib.pyplot as plt
 from PIL import Image
 from datetime import datetime
+import json
 
 def load_image(file_path: str) -> tuple[np.ndarray | None, str | None]:
     """
@@ -285,6 +286,52 @@ def update_channel_visibility(channel_config):
     else:
         return gr.update(visible=False), gr.update(visible=False)
 
+def save_settings(model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap):
+    """
+    Save the current settings to a JSON file.
+
+    Args:
+        model_type (str): Type of the model to use for segmentation.
+        diameter (int): Diameter of the cells to be segmented.
+        flow_threshold (float): Threshold for the flow error.
+        display_channel (str): Channel to display in the output figure.
+        seg_channel1 (int): First channel to use for segmentation.
+        seg_channel2 (int): Second channel to use for segmentation.
+        cmap (str): Colormap to use for displaying the segmentation masks.
+
+    Returns:
+        str: Success message indicating that the settings have been saved.
+    """
+    # Create a dictionary with the provided settings
+    settings = {
+        "model_type": model_type,
+        "diameter": diameter,
+        "flow_threshold": flow_threshold,
+        "display_channel": display_channel,
+        "seg_channel1": seg_channel1,
+        "seg_channel2": seg_channel2,
+        "cmap": cmap
+    }
+    
+    # Open the settings.json file in write mode and save the settings dictionary as JSON
+    with open("settings.json", "w") as f:
+        json.dump(settings, f)
+    gr.Info("Settings saved successfully!")
+
+def load_settings():
+    # Check if the settings.json file exists
+    if os.path.exists("settings.json"):
+        # Open the settings.json file in read mode
+        with open("settings.json", "r") as f:
+            # Load the settings from the JSON file
+            settings = json.load(f)
+        gr.Info("Settings loaded successfully!")
+        return (settings["model_type"], settings["diameter"], settings["flow_threshold"], 
+                settings["display_channel"], settings["seg_channel1"], settings["seg_channel2"], 
+                settings["cmap"])
+    gr.Warning("No saved settings found.")
+    return [gr.update()] * 7
+
 # Custom CSS
 custom_css = """
 .gradio-container {
@@ -348,6 +395,10 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     process_btn = gr.Button("Run Segmentation", scale=2)
 
     with gr.Row():
+        save_btn = gr.Button("Save Current Parameters", scale=1, size="lg")
+        load_btn = gr.Button("Load Last Parameters", scale=1, size="lg")
+
+    with gr.Row():
         output_plot = gr.Plot(label="Segmentation Results")
         progress_output = gr.Textbox(label="Progress", interactive=False, visible=False)
     
@@ -359,6 +410,18 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
         fn=process_and_display,
         inputs=[input_image, model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap],
         outputs=[output_plot, output_files, cell_count_output, progress_output]
+    )
+    
+    save_btn.click(
+        save_settings,
+        inputs=[model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap],
+        outputs=[]
+    )
+    
+    load_btn.click(
+        load_settings,
+        inputs=[],
+        outputs=[model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap]
     )
 
     gr.Markdown("This app is based on Cellpose, a software for cell segmentation in microscopy images. For more information, see the [Cellpose Github repository](https://github.com/Cellpose/Cellpose).", elem_classes=["center"])
