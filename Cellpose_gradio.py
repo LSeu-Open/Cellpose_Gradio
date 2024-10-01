@@ -295,21 +295,9 @@ def update_channel_visibility(channel_config):
     else:
         return gr.update(visible=False), gr.update(visible=False)
 
-def save_settings(model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap):
+def save_settings(profile_name, model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap):
     """
-    Save the current settings to a JSON file.
-
-    Args:
-        model_type (str): Type of the model to use for segmentation.
-        diameter (int): Diameter of the cells to be segmented.
-        flow_threshold (float): Threshold for the flow error.
-        display_channel (str): Channel to display in the output figure.
-        seg_channel1 (int): First channel to use for segmentation.
-        seg_channel2 (int): Second channel to use for segmentation.
-        cmap (str): Colormap to use for displaying the segmentation masks.
-
-    Returns:
-        str: Success message indicating that the settings have been saved.
+    Save the current settings to a JSON file with a specific profile name and refresh the profile list.
     """
     # Create a dictionary with the provided settings
     settings = {
@@ -322,43 +310,38 @@ def save_settings(model_type, diameter, flow_threshold, display_channel, seg_cha
         "cmap": cmap
     }
     
-    # Open the settings.json file in write mode and save the settings dictionary as JSON
-    with open("settings.json", "w") as f:
+    # Create a 'profiles' directory if it doesn't exist
+    os.makedirs("profiles", exist_ok=True)
+    
+    # Save the settings to a JSON file named after the profile
+    with open(f"profiles/{profile_name}.json", "w") as f:
         json.dump(settings, f)
-    gr.Info("Settings saved successfully!")
+    gr.Info(f"Settings saved successfully as profile: {profile_name}")
+    
+    # Return the updated list of profiles
+    return gr.update(choices=list_profiles())
 
-def load_settings():
+def list_profiles():
     """
-    Load the saved settings from a JSON file.
-
-    This function checks if the 'settings.json' file exists in the current directory.
-    If the file exists, it reads the file and loads the settings into a dictionary.
-    The settings are then returned as a tuple containing the model type, diameter,
-    flow threshold, display channel, segmentation channel 1, segmentation channel 2,
-    and colormap. If the file does not exist, a warning message is displayed and
-    default updates are returned.
-
-    Returns:
-        tuple: A tuple containing the loaded settings:
-            - model_type (str): Type of the model to use for segmentation.
-            - diameter (int): Diameter of the cells to be segmented.
-            - flow_threshold (float): Threshold for the flow error.
-            - display_channel (str): Channel to display in the output figure.
-            - seg_channel1 (int): First channel to use for segmentation.
-            - seg_channel2 (int): Second channel to use for segmentation.
-            - cmap (str): Colormap to use for displaying the segmentation masks.
+    List all available profiles in the 'profiles' directory.
     """
-    # Check if the settings.json file exists
-    if os.path.exists("settings.json"):
-        # Open the settings.json file in read mode
-        with open("settings.json", "r") as f:
-            # Load the settings from the JSON file
+    if not os.path.exists("profiles"):
+        return []
+    return [f.split('.')[0] for f in os.listdir("profiles") if f.endswith('.json')]
+
+def load_settings(profile_name):
+    """
+    Load settings from a specific profile JSON file.
+    """
+    file_path = f"profiles/{profile_name}.json"
+    if os.path.exists(file_path):
+        with open(file_path, "r") as f:
             settings = json.load(f)
-        gr.Info("Settings loaded successfully!")
+        gr.Info(f"Settings loaded successfully from profile: {profile_name}")
         return (settings["model_type"], settings["diameter"], settings["flow_threshold"], 
                 settings["display_channel"], settings["seg_channel1"], settings["seg_channel2"], 
                 settings["cmap"])
-    gr.Warning("No saved settings found.")
+    gr.Warning(f"Profile '{profile_name}' not found.")
     return [gr.update()] * 7
 
 ########################################################
@@ -397,7 +380,16 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     # Input image
     with gr.Row():
         input_image = gr.Image(label="Input Image - Supported formats include TIFF, PNG, and JPEG. - TIFF images preview is not supported.", type="numpy", height=400, width=400, visible=True)
-        
+
+    # Save and load settings
+    with gr.Row():
+        with gr.Column(scale=2):
+            profile_name = gr.Textbox(label="Save your current settings as a profile", placeholder="Enter profile name", info="Name your profile to save the current settings.")
+            save_btn = gr.Button("Save Profile", scale=1, size="sm")
+        with gr.Column(scale=2):
+            load_profile = gr.Dropdown(label="Load Profile", choices=list_profiles(), scale=1, info="Select a profile to load its settings.")
+            load_btn = gr.Button("Load Profile", scale=1, size="sm")    
+    
     # Model type, diameter, flow threshold
     with gr.Row():
         model_type = gr.Dropdown(choices=['cyto3', 'cyto2', 'cyto', 'nuclei'], label="Choose segmentation model", value='cyto3', scale=1, info="cyto/cyto2/cyto3: generalist models for cells (channel 1 is cells color and channel 2 is nuclei color), nuclei: specialized for nucleus segmentation.(channel 1 is nuclei color and set channel 2 to 0)")
@@ -437,11 +429,6 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     
     process_btn = gr.Button("Run Segmentation", scale=2)
 
-    # Save and load settings
-    with gr.Row():
-        save_btn = gr.Button("Save Current Parameters", scale=1, size="lg")
-        load_btn = gr.Button("Load Last Parameters", scale=1, size="lg")
-
     with gr.Row():
         output_plot = gr.Plot(label="Segmentation Results")
         progress_output = gr.Textbox(label="Progress", interactive=False, visible=False)
@@ -463,14 +450,14 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     # Save settings button
     save_btn.click(
         save_settings,
-        inputs=[model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap],
-        outputs=[]
+        inputs=[profile_name, model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap],
+        outputs=[load_profile]  # Update the load_profile dropdown
     )
 
     # Load settings button
     load_btn.click(
         load_settings,
-        inputs=[],
+        inputs=[load_profile],
         outputs=[model_type, diameter, flow_threshold, display_channel, seg_channel1, seg_channel2, cmap]
     )
 
