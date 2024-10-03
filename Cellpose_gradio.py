@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from datetime import datetime
 import json
+from werkzeug.utils import secure_filename
 
 ########################################################
 # 1. Utility functions
@@ -311,23 +312,34 @@ def save_settings(profile_name, model_type, diameter, flow_threshold, display_ch
     }
     
     # Create a 'profiles' directory if it doesn't exist
-    os.makedirs("profiles", exist_ok=True)
+    profiles_dir = "profiles"
+    os.makedirs(profiles_dir, exist_ok=True)
+    
+    # Ensure the profile name is safe to use as a filename
+    safe_profile_name = secure_filename(profile_name)
+    if not safe_profile_name:
+        raise ValueError("Invalid profile name")
+    
+    # Construct the full path
+    full_path = os.path.join(profiles_dir, f"{safe_profile_name}.json")
     
     # Save the settings to a JSON file named after the profile
-    with open(f"profiles/{profile_name}.json", "w") as f:
+    with open(full_path, "w") as f:
         json.dump(settings, f)
+    
     gr.Info(f"Settings saved successfully as profile: {profile_name}")
     
     # Return the updated list of profiles
-    return gr.update(choices=list_profiles())
+    return gr.update(choices=list_profiles(), value=safe_profile_name)
 
 def list_profiles():
     """
     List all available profiles in the 'profiles' directory.
     """
-    if not os.path.exists("profiles"):
+    base_path = "profiles"
+    if not os.path.exists(base_path):
         return []
-    return [f.split('.')[0] for f in os.listdir("profiles") if f.endswith('.json')]
+    return [f.split('.')[0] for f in os.listdir(base_path) if f.endswith('.json')]
 
 def load_settings(profile_name):
     """
