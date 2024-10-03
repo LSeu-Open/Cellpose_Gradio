@@ -6,3 +6,4 @@ seaborn
 cellpose
 tifffile
 torch
+werkzeug
