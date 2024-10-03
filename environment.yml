@@ -13,3 +13,4 @@ dependencies:
   - pip:
     - cellpose
     - tifffile
+    - werkzeug
