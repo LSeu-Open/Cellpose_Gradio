@@ -33,7 +33,7 @@ if %errorlevel% neq 0 (
 
 REM Install required packages
 echo Installing required packages...
-pip install numpy matplotlib pillow gradio seaborn cellpose tifffile
+pip install numpy matplotlib pillow gradio seaborn cellpose tifffile werkzeug
 if %errorlevel% neq 0 (
     echo Failed to install packages.
     pause
