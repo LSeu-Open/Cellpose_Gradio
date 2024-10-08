@@ -13,7 +13,7 @@ The ***Cellpose-Gradio App*** is a modern, user-friendly interface built on the 
 > 
 > If you are concerned about this, ***we welcome your feedback on our color choices. Please consider contacting us or opening an issue.***
 >
-> To **access the colorblind version**, please go to the **release list and select the colorblind version of the latest release.**
+> To **access the colorblind version**, please go to the **[release list](https://github.com/LSeu-Open/Cellpose_Gradio/releases) and select the colorblind version of the latest release.**
 
 ![Screenshot](https://github.com/LSeu-Open/Cellpose_Gradio/blob/main/Cellpose_Gradio_screenshot.png)
 
