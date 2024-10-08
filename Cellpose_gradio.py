@@ -198,15 +198,7 @@ def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str, 
     ax1.axis('off')
     
     # Display segmentation masks with the selected colormap
-    # Convert the colormap to grayscale
-    cmap_obj = plt.get_cmap(cmap)
-    grayscale_cmap = plt.cm.colors.LinearSegmentedColormap.from_list(
-        f"{cmap}_grayscale",
-        [cmap_obj(i) for i in range(cmap_obj.N)]
-    )
-    grayscale_cmap.set_bad(color='black')
-
-    ax2.imshow(masks, cmap=grayscale_cmap)
+    ax2.imshow(masks, cmap=cmap)
     ax2.set_title('Segmentation Masks')
     ax2.axis('off')
     ax2.set_facecolor('black')
