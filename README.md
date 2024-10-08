@@ -8,6 +8,13 @@ The ***Cellpose-Gradio App*** is a modern, user-friendly interface built on the 
 * select from pre-trained models.
 * adjust parameters to achieve high-quality cell segmentation results in just a few clicks.
 
+> [!IMPORTANT]
+> This app now has a **colorblind-ready version.**
+> 
+> If you are concerned about this, ***we welcome your feedback on our color choices. Please consider contacting us or opening an issue.***
+>
+> To **access the colorblind version**, please go to the **release list and select the colorblind version of the latest release.**
+
 ![Screenshot](https://github.com/LSeu-Open/Cellpose_Gradio/blob/main/Cellpose_Gradio_screenshot.png)
 
 > [!NOTE]
