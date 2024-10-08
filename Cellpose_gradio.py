@@ -7,6 +7,7 @@ from PIL import Image
 from datetime import datetime
 import json
 from werkzeug.utils import secure_filename
+
 ########################################################
 # 1. Utility functions
 ########################################################
@@ -196,8 +197,16 @@ def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str, 
     ax1.set_title('Original Image')
     ax1.axis('off')
     
-    # Display segmentation masks
-    ax2.imshow(masks, cmap=cmap)
+    # Display segmentation masks with the selected colormap
+    # Convert the colormap to grayscale
+    cmap_obj = plt.get_cmap(cmap)
+    grayscale_cmap = plt.cm.colors.LinearSegmentedColormap.from_list(
+        f"{cmap}_grayscale",
+        [cmap_obj(i) for i in range(cmap_obj.N)]
+    )
+    grayscale_cmap.set_bad(color='black')
+
+    ax2.imshow(masks, cmap=grayscale_cmap)
     ax2.set_title('Segmentation Masks')
     ax2.axis('off')
     ax2.set_facecolor('black')
@@ -381,17 +390,17 @@ custom_css = """
     justify-content: center;
     align-items: center;
     padding: 20px 0;
-    background-color: #f9fafb;
-    border-bottom: 1px solid #ffcc99;
+    background-color: #ffffff;
+    border-bottom: 1px solid #cccccc;
 }
 .app-header h1 {
     font-size: 28px;
-    color: #ff6600;
+    color: #333333;
     margin-bottom: 10px;
 }
 .app-header p {
     font-size: 16px;
-    color: #ff9933;
+    color: #555555;
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
@@ -404,13 +413,13 @@ custom_css = """
     justify-content: center;
     align-items: center;
     padding: 20px 0;
-    background-color: #f9fafb;
-    border-top: 1px solid #ffcc99;
+    background-color: #ffffff;
+    border-top: 1px solid #cccccc;
     margin-top: 30px;
 }
 .app-footer p {
     font-size: 14px;
-    color: #ff9933;
+    color: #555555;
     max-width: 800px;
     margin: 10px auto;
     text-align: center;
@@ -419,43 +428,44 @@ custom_css = """
     font-weight: bold;
 }
 .custom-component:hover {
-    background-color: #fdedd6;
-    color: white;
+    background-color: #e0e0e0;
+    color: #333333;
 }
 .custom-button {
-    color: #ff9933 !important;
-    border-color: #ff9933 !important;
+    color: #333333 !important;
+    border-color: #333333 !important;
     background-color: white !important;
     font-weight: bold !important;
     transition: all 0.3s ease !important;
+    border: 1px solid #808080 !important;
+    border-radius: 5px !important;
 }
 .custom-button:hover {
     color: white !important;
-    background-color: #ff9933 !important;
+    background-color: #555555 !important;
 }
 .custom-button:active {
     color: white !important;
-    background-color: #5ce65c !important;
+    background-color: #777777 !important;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 .custom-dropdown {
     font-weight: bold;
 }
-
 .custom-dropdown:hover {
-    background-color: #fdedd6;
-    color: white;
+    background-color: #e0e0e0;
+    color: #333333;
 }
 .custom-slider {
     font-weight: bold;
 }
 .custom-slider:hover {
-    background-color: #fdedd6;
-    color: white;
+    background-color: #e0e0e0;
+    color: #333333;
 }
 """
 
-custom_theme = gr.themes.Soft(primary_hue="orange", secondary_hue="orange", font=["Arial", "sans-serif"])
+custom_theme = gr.themes.Monochrome(primary_hue="gray", secondary_hue="gray", font=["Arial", "sans-serif"])
 
 ########################################################
 # 5. Gradio interface
@@ -500,7 +510,7 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
                     elem_classes=["custom-dropdown"]
                 )
                 cmap = gr.Dropdown(
-                choices=['tab20', 'tab20b', 'tab20c','viridis', 'plasma', 'inferno', 'magma', 'cividis', 'hsv', 'twilight', 'gray'],
+                choices=['tab20', 'tab20b', 'tab20c'],
                 label="Segmentation Masks Color Palette",
                 value='tab20b',
                 info="The color palette used to display different cells in the segmentation result.",
