@@ -7,6 +7,7 @@ from PIL import Image
 from datetime import datetime
 import json
 from werkzeug.utils import secure_filename
+
 ########################################################
 # 1. Utility functions
 ########################################################
@@ -156,7 +157,7 @@ def segment_image(image: np.ndarray, model_type: str, channels: list, diameter: 
         masks, _, _, _ = model.eval(image, channels=channels, diameter=diameter, flow_threshold=flow_threshold)
         return masks
     except Exception as e:
-        raise RuntimeError(f"Segmentation failed: {str(e)}. Check your input image and parameters.")
+        raise gr.Error(f"Segmentation failed: {str(e)}. Check your input image and parameters.")
 
 def display_results(image: np.ndarray, masks: np.ndarray, display_channel: str, cmap: str = 'tab20b') -> plt.Figure:
     """
@@ -318,7 +319,7 @@ def save_settings(profile_name, model_type, diameter, flow_threshold, display_ch
     # Ensure the profile name is safe to use as a filename
     safe_profile_name = secure_filename(profile_name)
     if not safe_profile_name:
-        raise ValueError("Invalid profile name")
+        raise gr.Error("Invalid profile name")
     
     # Construct the full path
     full_path = os.path.join(profiles_dir, f"{safe_profile_name}.json")
@@ -391,7 +392,7 @@ custom_css = """
 }
 .app-header p {
     font-size: 16px;
-    color: #ff9933;
+    color: #f5830b;
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
@@ -409,8 +410,8 @@ custom_css = """
     margin-top: 30px;
 }
 .app-footer p {
-    font-size: 14px;
-    color: #ff9933;
+    font-size: 16px;
+    color: #f5830b;
     max-width: 800px;
     margin: 10px auto;
     text-align: center;
@@ -423,7 +424,7 @@ custom_css = """
     color: white;
 }
 .custom-button {
-    color: #ff9933 !important;
+    color: #f5830b !important;
     border-color: #ff9933 !important;
     background-color: white !important;
     font-weight: bold !important;
@@ -440,6 +441,7 @@ custom_css = """
 }
 .custom-dropdown {
     font-weight: bold;
+    font-size: 10px;
 }
 
 .custom-dropdown:hover {
@@ -448,6 +450,7 @@ custom_css = """
 }
 .custom-slider {
     font-weight: bold;
+    font-size: 10px;
 }
 .custom-slider:hover {
     background-color: #fdedd6;
@@ -465,9 +468,9 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     # Title and description
     with gr.Row(elem_classes=["app-header"]):
         gr.Markdown("# Cellpose Gradio")
-        gr.Markdown("A Gradio based user-friendly interface for cell segmentation using Cellpose.")
-        gr.Markdown("For more complex needs, please use the Cellpose GUI.")
-        gr.Markdown("Please refer to the [Cellpose documentation](https://cellpose.readthedocs.io/en/latest/) for more information on the parameters.")
+        gr.Markdown("A user-friendly interface for cell segmentation powered by Cellpose and built with Gradio.")
+        gr.Markdown("This application provides a user-friendly interface for cell segmentation tasks. <br> For more advanced functionalities, users may prefer the comprehensive Cellpose GUI.")
+        gr.Markdown("Please refer to the **[Cellpose documentation](https://cellpose.readthedocs.io/en/latest/)** for more information on specific parameters.")
     
     # Input image
     with gr.Row():
@@ -476,17 +479,17 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
     # Save and load settings
     with gr.Row():
         with gr.Column(scale=1):
-            profile_name = gr.Textbox(label="Save your current settings as a profile", placeholder="Enter profile name", info="Name your profile to save the current settings.", elem_classes=["custom-component"])
+            profile_name = gr.Textbox(label="Save Profile", placeholder="Enter profile name", info="Name your profile to **save the current settings**.", elem_classes=["custom-component"])
             save_btn = gr.Button("Save Profile", scale=1, size="sm", elem_classes=["custom-button"])
         with gr.Column(scale=1):
-            load_profile = gr.Dropdown(label="Load Profile", choices=list_profiles(), scale=1, info="Select a profile to load its settings.", elem_classes=["custom-dropdown"])
+            load_profile = gr.Dropdown(label="Load Profile", choices=list_profiles(), scale=1, info="Select a profile to **load its settings**.", elem_classes=["custom-dropdown"])
             load_btn = gr.Button("Load Profile", scale=1, size="sm", elem_classes=["custom-button"])    
     
     # Model type, diameter, flow threshold
     with gr.Row():
-        model_type = gr.Dropdown(choices=['cyto3', 'cyto2', 'cyto', 'nuclei'], label="Choose segmentation model", value='cyto3', scale=1, info="cyto/cyto2/cyto3: generalist models for cells (channel 1 is cells color and channel 2 is nuclei color), nuclei: specialized for nucleus segmentation.(channel 1 is nuclei color and set channel 2 to 0)", elem_classes=["custom-dropdown"])
-        diameter = gr.Slider(minimum=1, maximum=100, step=1,label="Diameter", value=30, scale=1, info="Set the expected diameter of cells in pixels. When the diameter is set smaller than the true size then cellpose may over-split cells. Similarly, if the diameter is set too big then cellpose may over-merge cells.", elem_classes=["custom-slider"])
-        flow_threshold = gr.Slider(minimum=0.0, maximum=1.0, step=0.01,label="Flow Threshold", value=0.4, scale=1, info="Adjust the flow threshold (maximum allowed error of the flows for each mask): Increase it if cellpose is not returning as many ROIs as you’d expect. Decrease it if cellpose is returning too many ill-shaped ROIs.", elem_classes=["custom-slider"])
+        model_type = gr.Dropdown(choices=['cyto3', 'cyto2', 'cyto', 'nuclei'], label="Segmentation model", value='cyto3', scale=1, info="**Choose the model used for segmentation.** <br> ***cyto/cyto2/cyto3***: generalist models for cells (channel 1 is cells color and channel 2 is nuclei color). <br> ***nuclei***: specialized for nucleus segmentation (channel 1 is nuclei color and set channel 2 to 0).", elem_classes=["custom-dropdown"])
+        diameter = gr.Slider(minimum=1, maximum=100, step=1,label="Diameter", value=30, scale=1, info="**Set the expected diameter of cells in pixels.** <br> When the diameter is set smaller than the true size then cellpose may over-split cells. If the diameter is set too big then cellpose may over-merge cells.", elem_classes=["custom-slider"])
+        flow_threshold = gr.Slider(minimum=0.0, maximum=1.0, step=0.01,label="Flow Threshold", value=0.4, scale=1, info="**Adjust the flow threshold.** <br> Increase it if cellpose is not returning as many ROIs as you’d expect. Decrease it if cellpose is returning too many ill-shaped ROIs.", elem_classes=["custom-slider"])
     
     # Display channel, segmentation channels, and color palette
     with gr.Row():
@@ -494,16 +497,16 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
             with gr.Group():
                 display_channel = gr.Dropdown(
                 choices=["RGB", "Grayscale", "Red", "Green", "Blue"],
-                label="Displayed Channel",
+                label="Display Mode",
                     value="RGB",
-                    info="The channel used to display the original image after segmentation.",
+                    info="Select the channel used to display the original image **in the segmentation result**.",
                     elem_classes=["custom-dropdown"]
                 )
                 cmap = gr.Dropdown(
                 choices=['tab20', 'tab20b', 'tab20c','viridis', 'plasma', 'inferno', 'magma', 'cividis', 'hsv', 'twilight', 'gray'],
-                label="Segmentation Masks Color Palette",
+                label="Masks Color Palette",
                 value='tab20b',
-                info="The color palette used to display different cells in the segmentation result.",
+                info="Select the color palette used to **color cells in the segmentation result.**",
                 elem_classes=["custom-dropdown"]
             )
         with gr.Column(scale=2):
@@ -512,14 +515,14 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
                     choices=[0, 1, 2, 3],
                     label="Segmentation Channel 1",
                     value=0,
-                    info="0=grayscale, 1=red, 2=green, 3=blue",
+                    info="**0=grayscale, 1=red, 2=green, 3=blue**",
                     elem_classes=["custom-dropdown"]
                 )
                 seg_channel2 = gr.Dropdown(
                     choices=[0, 1, 2, 3],
                     label="Segmentation Channel 2",
                     value=0,
-                    info="0=None (will set to zero), 1=red, 2=green, 3=blue",
+                    info="**0=None (will set to zero), 1=red, 2=green, 3=blue**",
                     elem_classes=["custom-dropdown"]
                 )
     
@@ -560,9 +563,9 @@ with gr.Blocks(css=custom_css, theme=custom_theme) as iface:
 
     # Footer
     with gr.Row(elem_classes=["app-footer"]):
-        gr.Markdown("This app is based on Cellpose, a software for cell segmentation in microscopy images. For more information, see the [Cellpose Github repository](https://github.com/Cellpose/Cellpose).")
-        gr.Markdown("If you find this app useful, please cite the [Cellpose3 paper](https://www.biorxiv.org/content/10.1101/2024.02.10.579780v1).")
-        gr.Markdown("If you have any issues or feedback, please open an issue on the [Github Cellpose-gradio repository](https://github.com/LSeu-Open/cellpose-gradio).")
+        gr.Markdown("This application utilizes Cellpose, a tool designed for cell segmentation in microscopy images. <br> For additional information, please refer to the [Cellpose Github repository](https://github.com/Cellpose/Cellpose).")
+        gr.Markdown("If you use this application for your research, please consider citing the [original Cellpose 1.0 paper](https://www.nature.com/articles/s41592-020-01018-x) and the [Cellpose3 paper](https://www.biorxiv.org/content/10.1101/2024.02.10.579780v1).")
+        gr.Markdown("For any issues or feedback regarding this application, please submit an issue on the [Cellpose-gradio Github repository](https://github.com/LSeu-Open/cellpose-gradio).")
 
 ########################################################
 # 6. Launch the interface
