@@ -1,12 +1,24 @@
 # Cellpose-Gradio
 
-In response to non-experts' struggles with Cellpose's complex installation process, I created this app to provide a more accessible solution.
+In response to non-experts' struggles with Cellpose's complex process, I created this app to provide a more accessible solution.
 
-The ***Cellpose-Gradio App*** is a modern, user-friendly interface built on the popular **Cellpose library**, making its powerful cell segmentation capabilities available to users without extensive technical expertise. By encapsulating the complexity of Cellpose within an intuitive **Gradio app**, users can easily:
+The ***Cellpose-Gradio App*** is a modern, user-friendly interface built on the popular **Cellpose library**, making its powerful cell segmentation capabilities available to users without extensive technical expertise. 
+
+This app is designed for straightforward, **single-image segmentation tasks**, utilizing the core features of Cellpose. Additionally, **it can serves as an educational tool to help users understand how to manage segmentation parameters effectively.** 
+
+For more advanced control over segmentation, including **human-in-the-loop training** or accessing the **image restoration features of the 3.0 version**, please use the **official Cellpose GUI**.
+
+By encapsulating the complexity of Cellpose within an intuitive **Gradio app**, users can easily:
 
 * upload images.
 * select from pre-trained models.
-* adjust parameters to achieve high-quality cell segmentation results in just a few clicks.
+* adjust parameters to achieve **high-quality cell segmentation results in just a few clicks**.
+* **Save results** to multiple file formats:
+  - ***Segmentation masks*** in either .png or .npy format.
+  - ***Outlines of segmentation masks*** as .png files.
+  - ***Resulting figures*** displayed within the app as .png or .svg files.
+
+<br>
 
 > [!IMPORTANT]
 > This app now has a **colorblind-ready version.**
@@ -15,20 +27,7 @@ The ***Cellpose-Gradio App*** is a modern, user-friendly interface built on the 
 >
 > To **access the colorblind version**, please go to the **[release list](https://github.com/LSeu-Open/Cellpose_Gradio/releases) and select the colorblind version of the latest release.**
 
-![Screenshot](https://github.com/LSeu-Open/Cellpose_Gradio/blob/main/Cellpose_Gradio_screenshot.png)
-
-> [!NOTE]
-> When you upload your image, you will see a preview if it is in .png or .jpeg format. Please note that the current version of Gradio **does not support previews for TIF images**.
-
-> [!CAUTION]
-> This app is designed for straightforward, single-image segmentation tasks, utilizing the core features of Cellpose. Additionally, it can serves as an educational tool to help users understand how to manage segmentation parameters effectively.
->
->  For more advanced control over segmentation, including human-in-the-loop training or accessing the image restoration features of the 3.0 version, please use the **official Cellpose GUI**.
-
-> [!IMPORTANT]
-> For **simplicity and ease of use**, this Gradio-based app **omits GPU acceleration**, instead relying on CPU for all cell segmentation tasks.
->
-> If you plan to **run multiple images or process very large images**, you may benefit from installing the **official Cellpose GUI with GPU support**.
+<br>
 
 ## Table of Contents
 
@@ -52,6 +51,11 @@ The ***Cellpose-Gradio App*** is a modern, user-friendly interface built on the 
 If Python is not already installed, please download and install it from the [official Python website](https://www.python.org/downloads/) for your operating system.
 
 Once Python is installed, you can proceed with the next steps in the installation process.
+
+> [!IMPORTANT]
+> For **simplicity and ease of use**, this Gradio-based app **omits GPU acceleration**, instead relying on CPU for all cell segmentation tasks.
+>
+> If you plan to **run multiple images or process very large images**, you may benefit from installing the **official Cellpose GUI with GPU support**.
 
 <br>
 
