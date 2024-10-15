@@ -38,7 +38,7 @@ By encapsulating the complexity of Cellpose within an intuitive **Gradio app**, 
     - [Linux and macOS (Initial Setup)](#linux-and-macos-initial-setup)
     - [Run the App After the Initial Setup](#run-the-app-after-the-initial-setup)    
 * [Manual Installation and Running](#manual-installation-and-running)
-    - [Using venv](#using-venv)
+    - [Using venv and PyPI](#using-venv-and-pypi)
     - [Using Conda](#using-conda)
     - [Using uv](#using-uv)  
 * [Acknowledgments](#acknowledgments)
@@ -147,7 +147,7 @@ These scripts will activate the environment and **launch the Cellpose Gradio app
 
 ## Manual Installation and Running
 
-### Using venv
+### Using venv and PyPI
 
 1. Clone this repository:
 
@@ -193,7 +193,7 @@ These scripts will activate the environment and **launch the Cellpose Gradio app
 ### Using Conda
 
 > [!NOTE]
-> we will assume that you have already installed Conda. If not, please install Conda from [here](https://docs.anaconda.com/free/miniconda/miniconda-install/).
+> **we will assume that you have already installed Conda**. If not, please install Conda from **[the official website](https://docs.anaconda.com/free/miniconda/miniconda-install/)**.
 
 1. Open Anaconda Prompt (on Windows) or Terminal (on macOS/Linux).
 
@@ -225,6 +225,10 @@ These scripts will activate the environment and **launch the Cellpose Gradio app
 6. Open your web browser and go to the URL displayed in the Anaconda Prompt/Terminal (usually `http://127.0.0.1:7860`).
 
 ### Using uv
+> [!NOTE]
+> UV is a cutting-edge and **extremely fast Python package and project manager**, written in Rust.
+>
+> **We will assume that you have already installed UV**. If not, please install it by following **[the official documentation](https://docs.astral.sh/uv/getting-started/installation/)**.
 
 1. Clone this repository:
 
@@ -233,20 +237,14 @@ These scripts will activate the environment and **launch the Cellpose Gradio app
    cd Cellpose-Gradio
    ```
 
-2. Install uv if you haven't already:
-
-   ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
-
-3. Create a virtual environment and install dependencies:
+2. Create a virtual environment and install dependencies:
 
    ```bash
    uv venv
    uv pip install -r requirements.txt
    ```
 
-4. Activate the virtual environment:
+3. Activate the virtual environment:
 
    * On Windows:
 
@@ -260,13 +258,13 @@ These scripts will activate the environment and **launch the Cellpose Gradio app
    source .venv/bin/activate
    ```
 
-5. Run the app:
+4. Run the app:
 
    ```bash
    python Cellpose_gradio.py
    ```
 
-6. Open your web browser and go to the URL displayed in the terminal (usually `http://127.0.0.1:7860`).
+5. Open your web browser and go to the URL displayed in the terminal (usually `http://127.0.0.1:7860`).
 
 <br>
 
