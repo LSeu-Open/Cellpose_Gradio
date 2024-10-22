@@ -7,3 +7,5 @@ cellpose
 tifffile
 torch
 werkzeug
+io
+jsonschema
