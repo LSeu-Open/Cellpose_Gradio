@@ -28,7 +28,7 @@ fi
 
 # Install required packages
 echo "Installing required packages..."
-pip install numpy matplotlib pillow gradio seaborn cellpose tifffile werkzeug io jsonschema
+pip install -r requirements.txt
 
 # Launch the Gradio app
 echo "Launching Cellpose Gradio app..."
